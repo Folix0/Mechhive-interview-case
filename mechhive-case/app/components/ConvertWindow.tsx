@@ -9,15 +9,25 @@ import "node_modules/flag-icons/css/flag-icons.min.css";
 interface CurrencySelectorProps {
   name: string;
   currencies: { [key: string]: string };
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  value: string;
 }
 
 const CurrencySelector: React.FC<CurrencySelectorProps> = ({
   name,
   currencies,
+  onChange,
+  value,
 }) => {
   return (
     <div>
-      <select id="convertBox" name={name} className="">
+      <select
+        id="convertBox"
+        name={name}
+        className=""
+        onChange={onChange}
+        value={value}
+      >
         {Object.entries(currencies).map(([code, name]) => (
           <option key={code} value={code}>
             {code} - {name}
@@ -31,8 +41,11 @@ const CurrencySelector: React.FC<CurrencySelectorProps> = ({
 const ConvertWindow: React.FC = () => {
   const [currencies, setCurrencies] = useState<{ [key: string]: string }>({});
   const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+  const [fromCurrency, setFromCurrency] = useState<string>("USD");
+  const [toCurrency, setToCurrency] = useState<string>("EUR");
+  const [amount, setAmount] = useState<number>(0);
 
-  //Check if currency symbols are already fetched. If not, then we fetch them from our API
+  //Fetch currencies from API only if they aren't already in localStorage
   useEffect(() => {
     const fetchCurrencies = async () => {
       try {
@@ -65,9 +78,32 @@ const ConvertWindow: React.FC = () => {
     try {
       const result = await fetchCurrencyExchange(from, to, amount);
       setExchangeRate(result.result);
+      setAmount(amount);
     } catch (error) {
       console.error("Error fetching exchange rate:", error);
     }
+  };
+
+  //clear any previous conversion calculations if from or to fields are changed
+  const handleFromCurrencyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setExchangeRate(null);
+    setFromCurrency(event.target.value);
+  };
+
+  const handleToCurrencyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setExchangeRate(null);
+    setToCurrency(event.target.value);
+  };
+
+  //swap the currencies when swapArrows are clicked
+  const handleSwapCurrencies = () => {
+    setFromCurrency(toCurrency);
+    setToCurrency(fromCurrency);
+    setExchangeRate(null);
   };
 
   return (
@@ -95,33 +131,49 @@ const ConvertWindow: React.FC = () => {
           </div>
           <div className="flex flex-col">
             <p className="text-left mb-2 text-white text-xl font-bold">From</p>
-            <CurrencySelector name="from" currencies={currencies} />
+            <CurrencySelector
+              name="from"
+              currencies={currencies}
+              onChange={handleFromCurrencyChange}
+              value={fromCurrency}
+            />
           </div>
           <div className="flex items-end mb-1">
             <img
               src={swapArrows}
               alt="SwapArrows"
-              className="max-w-14 max-h-14"
+              className="max-w-14 max-h-14 cursor-pointer"
+              onClick={handleSwapCurrencies}
             />
           </div>
           <div className="flex flex-col">
             <p className="text-left mb-2 text-white text-xl font-bold">To</p>
-            <CurrencySelector name="to" currencies={currencies} />
+            <CurrencySelector
+              name="to"
+              currencies={currencies}
+              onChange={handleToCurrencyChange}
+              value={toCurrency}
+            />
           </div>
         </div>
         <div id="ExchangeInfo" className="flex flex-row">
           <div className="flex flex-col mt-auto items-baseline justify-end text-white">
             <div className="text-white text-xl font-bold flex flex-row items-baseline">
               {exchangeRate !== null && (
-                <div className="ml-2 text-3sxl font-bold flex flex-col">                  
+                <div className="ml-2 text-3sxl flex flex-col font-normal">
                   <>
-                    <div className=" flex flex-row items-baseline">
-                    <p className="text-xl">1.00 US Dollar=</p>
-                  <p className="ml-2 text-3xl ">{exchangeRate} Euros</p>
+                    <div className="flex flex-row items-baseline">
+                      <p id="from" className="text-xl">
+                        {amount.toFixed(2)} {fromCurrency} =
+                      </p>
+                      <p id="to" className="ml-2 text-3xl font-bold ">
+                        {exchangeRate.toFixed(8)} {toCurrency}
+                      </p>
                     </div>
                     <div className="flex">
                       <p className="flex text-base text-white ">
-                        1 EUR = {exchangeRate/10 + 1} USD
+                        1 {toCurrency} = {(amount / exchangeRate).toFixed(6)}{" "}
+                        {fromCurrency}
                       </p>
                     </div>
                   </>
@@ -137,11 +189,6 @@ const ConvertWindow: React.FC = () => {
           </button>
         </div>
       </form>
-      {/* {exchangeRate !== null && (
-        <div>
-          <p>Exchange Rate: {exchangeRate}</p>
-        </div>
-      )} */}
     </div>
   );
 };
