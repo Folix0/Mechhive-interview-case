@@ -1,7 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { Form } from "@remix-run/react";
 import logo from "../assets/logo.svg";
-import swapArrows from "../assets/swapArrows.svg";
+import CurrencySelector from "~/components/ConvertWindow";
 
 export const meta: MetaFunction = () => {
   return [
@@ -27,8 +27,7 @@ export default function Homepage() {
         />
         <h1>Currency Converter</h1>
         <h3>Check live foreign currency exchange rates</h3>
-        
-        <button>Convert</button>
+        <CurrencySelector />
       </div>
     </div>
   );
