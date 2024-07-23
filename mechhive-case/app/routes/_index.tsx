@@ -1,48 +1,33 @@
 import type { MetaFunction } from "@remix-run/node";
+import { useNavigate } from "@remix-run/react"
+import logo from "../assets/logo.svg";
 
 export const meta: MetaFunction = () => {
   return [
-    { title: "New Remix App" },
-    { name: "description", content: "Welcome to Remix!" },
+    { title: "Homepage" },
+    { name: "description", content: "Welcome to the Homepage!" },
   ];
 };
 
-export default function Index() {
+export default function Homepage() {
+  let navigate = useNavigate()
   return (
-    <div className="font-sans p-4">
-      <h1 className="text-3xl">Welcome to Remix</h1>
-      <ul className="list-disc mt-4 pl-6 space-y-2">
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/quickstart"
-            rel="noreferrer"
-          >
-            5m Quick Start
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            target="_blank"
-            href="https://remix.run/start/tutorial"
-            rel="noreferrer"
-          >
-            30m Tutorial
-          </a>
-        </li>
-        <li>
-          <a
-            className="text-blue-700 underline visited:text-purple-900"
-            // target="_blank"
-            href="https://remix.run/docs"
-            rel="noreferrer"
-          >
-            Remix Docs
-          </a>
-        </li>
-      </ul>
+    <div>
+      <div
+        id="background"
+        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 md:pb-0"
+      >
+        <img src={logo} alt="Logo" className="absolute top-1 left-1 ml-8 mt-4 w-16 h-16 md:ml-32 md:mt-8 md:w-24 md:h-24"   />
+        <h1>
+          Trusted Global Currency Converter & Money Transfer Solutions
+        </h1>
+        <h3>
+        Best source for currency conversion, sending money online and tracking exchange rates
+        </h3>
+        <button onClick={() => navigate("/currency-converter")}>
+          Convert
+        </button>
+      </div>
     </div>
   );
 }
