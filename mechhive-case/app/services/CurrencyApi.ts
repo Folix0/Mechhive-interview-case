@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEnv } from "./useEnv";
+import { useEnv } from "../hooks/useEnv";
 
 const { REACT_APP_RAPIDAPI_KEY } = useEnv();
 

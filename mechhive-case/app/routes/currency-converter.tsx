@@ -1,5 +1,4 @@
 import type { MetaFunction } from "@remix-run/node";
-import { Form } from "@remix-run/react";
 import logo from "../assets/logo.svg";
 import CurrencySelector from "~/components/ConvertWindow";
 

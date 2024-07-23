@@ -1,6 +1,7 @@
 import type { MetaFunction } from "@remix-run/node";
 import { useNavigate } from "@remix-run/react"
 import logo from "../assets/logo.svg";
+import { useAuth } from "~/services/authContext";
 
 export const meta: MetaFunction = () => {
   return [
@@ -11,6 +12,12 @@ export const meta: MetaFunction = () => {
 
 export default function Homepage() {
   let navigate = useNavigate()
+  const { isAuthenticated, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+  };
+
   return (
     <div>
       <div
@@ -27,6 +34,11 @@ export default function Homepage() {
         <button onClick={() => navigate("/currency-converter")}>
           Convert
         </button>
+        {isAuthenticated && (
+          <button onClick={handleLogout} className="mt-4 p-2 text-sm text-black absolute top-1 right-1 mr-8 w-16 h-8 md:mr-24 md:mt-8 md:w-24 md:h-12">
+            Sign Out
+          </button>
+        )}
       </div>
     </div>
   );

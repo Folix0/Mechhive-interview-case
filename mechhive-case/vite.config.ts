@@ -16,6 +16,7 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  //please add an .env file to the root of the project and add your REACT_APP_RAPIDAPI_KEY key
   define: {
     'process.env.REACT_APP_RAPIDAPI_KEY': JSON.stringify(process.env.REACT_APP_RAPIDAPI_KEY),
   },
