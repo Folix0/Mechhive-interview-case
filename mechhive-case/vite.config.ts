@@ -1,6 +1,9 @@
 import { vitePlugin as remix } from "@remix-run/dev";
 import { defineConfig } from "vite";
 import tsconfigPaths from "vite-tsconfig-paths";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 export default defineConfig({
   plugins: [
@@ -13,4 +16,7 @@ export default defineConfig({
     }),
     tsconfigPaths(),
   ],
+  define: {
+    'process.env.REACT_APP_RAPIDAPI_KEY': JSON.stringify(process.env.REACT_APP_RAPIDAPI_KEY),
+  },
 });

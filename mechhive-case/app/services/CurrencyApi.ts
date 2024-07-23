@@ -1,7 +1,9 @@
-//hook to fetch retrieving our exchange rate
 import axios from "axios";
+import { useEnv } from "./useEnv";
 
-const API_KEY = process.env.RAPIDAPI_KEY;
+const { REACT_APP_RAPIDAPI_KEY } = useEnv();
+
+const API_KEY = REACT_APP_RAPIDAPI_KEY;
 const API_HOST = 'currency-conversion-and-exchange-rates.p.rapidapi.com';
 
 const axiosInstance = axios.create({
@@ -28,6 +30,7 @@ export const fetchCurrencyExchange = async (from: string, to: string, amount: nu
   }
 };
 
+// Fetch all available currencies that we can perform a conversion on
 export const fetchAvailableCurrencies = async () => {
   const options = {
     method: "GET",
