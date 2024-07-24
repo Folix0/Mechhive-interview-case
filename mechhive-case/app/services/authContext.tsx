@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from "react";
+import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 
 interface AuthContextType {
   isAuthenticated: boolean;
@@ -13,10 +13,27 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isMounted, setIsMounted] = useState<boolean>(false);
+
+  //Initial authentication check on component mount
+  useEffect(() => {
+    setIsMounted(true);
+    const storedAuth = localStorage.getItem("isAuthenticated");
+    if (storedAuth) {
+      setIsAuthenticated(JSON.parse(storedAuth));
+    }
+  }, []);
+
+  //If the component is mounted, the auth status is saved to localStorage
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("isAuthenticated", JSON.stringify(isAuthenticated));
+    }
+  }, [isAuthenticated, isMounted]);
 
   const login = ({ username, password }: { username: string; password: string }) => {
-    // Placeholder authentication logic
+    //Placeholder authentication logic
     if (username === "admin" && password === "password") {
       setIsAuthenticated(true);
     } else {
