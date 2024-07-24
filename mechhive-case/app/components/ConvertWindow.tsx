@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
 import CurrencySelector from "./CurrencySelector";
 import swapArrows from "../assets/swapArrows.svg";
-import { fetchCurrencyExchange } from "~/services/CurrencyApi";
+import { getApiConfig } from "~/utils/getApiConfig";
+
+const { API_KEY, API_HOST } = getApiConfig();
 
 const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, initialExchangeRate: number | null }> = ({ availableCurrencies, initialExchangeRate }) => {
   const [fromCurrency, setFromCurrency] = useState<string>("USD");
@@ -11,7 +13,9 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
 
   useEffect(() => {
-    if (exchangeRate !== null) {
+    if (amount === 0 || amount === undefined) {
+      setExchangeRate(null);
+    } else if (exchangeRate !== null) {
       setConvertedAmount(amount * exchangeRate);
     }
   }, [exchangeRate, amount]);
@@ -27,8 +31,9 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setAmount(parseFloat(event.target.value));
-  };
+  const value = event.target.value;
+  setAmount(value === "" ? 0 : parseFloat(value));
+};
 
   const handleSwapCurrencies = () => {
     setFromCurrency(toCurrency);
@@ -40,7 +45,18 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const result = await fetchCurrencyExchange(fromCurrency, toCurrency, 1);
+      const response = await fetch(`https://${API_HOST}/convert?from=${fromCurrency}&to=${toCurrency}&amount=1`, {
+        headers: {
+          'x-rapidapi-key': API_KEY,
+          'x-rapidapi-host': API_HOST
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch currency exchange");
+      }
+
+      const result = await response.json();
       setExchangeRate(result.result);
     } catch (error) {
       console.error("Error fetching exchange rate:", error);
