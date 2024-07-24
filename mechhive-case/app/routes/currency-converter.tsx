@@ -3,7 +3,20 @@ import logo from "../assets/logo.svg";
 import CurrencySelector from "~/components/ConvertWindow";
 import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import { fetchAvailableCurrencies, fetchCurrencyExchange } from "~/services/CurrencyApi";
+import { getApiConfig } from "~/utils/getApiConfig";
+
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Exchange Converter" },
+    { name: "description", content: "A tool with which you can calculate your exchange rate!" },
+    { name: "keywords", content: "currency, exchange, converter, rates" },
+    { property: "og:title", content: "Exchange Converter" },
+    { property: "og:description", content: "Calculate your exchange rate with our tool!" },
+    { property: "og:type", content: "website" },
+  ];
+};
+
+const { API_KEY, API_HOST } = getApiConfig();
 
 //Fetch from, to, and amount
 export const loader: LoaderFunction = async ({ request }) => {
@@ -15,22 +28,34 @@ export const loader: LoaderFunction = async ({ request }) => {
   //If all are present, calculate exchange rate
   let exchangeRate = null;
   if (from && to && amount) {
-    const result = await fetchCurrencyExchange(from, to, parseFloat(amount));
+    const response = await fetch(`https://${API_HOST}/convert?from=${from}&to=${to}&amount=${amount}`, {
+      headers: {
+        'x-rapidapi-key': API_KEY,
+        'x-rapidapi-host': API_HOST
+      }
+    });
+
+    if (!response.ok) {
+      throw new Response("Failed to fetch currency exchange", { status: response.status });
+    }
+
+    const result = await response.json();
     exchangeRate = result.result;
   }
 
-  const availableCurrencies = await fetchAvailableCurrencies();
-  return json({ availableCurrencies, exchangeRate });
-};
+  const response = await fetch(`https://${API_HOST}/symbols`, {
+    headers: {
+      'x-rapidapi-key': API_KEY,
+      'x-rapidapi-host': API_HOST
+    }
+  });
 
-export const meta: MetaFunction = () => {
-  return [
-    { title: "Exchange Converter" },
-    {
-      name: "description",
-      content: "A tool with which you can calculate your exchange rate!",
-    },
-  ];
+  if (!response.ok) {
+    throw new Response("Failed to fetch available currencies", { status: response.status });
+  }
+
+  const availableCurrencies = await response.json();
+  return json({ availableCurrencies: availableCurrencies.symbols, exchangeRate });
 };
 
 export default function Homepage() {

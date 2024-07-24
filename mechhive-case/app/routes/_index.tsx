@@ -7,6 +7,10 @@ export const meta: MetaFunction = () => {
   return [
     { title: "Homepage" },
     { name: "description", content: "Welcome to the Homepage!" },
+    { name: "keywords", content: "homepage, currency, converter, money transfer" },
+    { property: "og:title", content: "Homepage" },
+    { property: "og:description", content: "Welcome to the Homepage!" },
+    { property: "og:type", content: "website" },
   ];
 };
 
