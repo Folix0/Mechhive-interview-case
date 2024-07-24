@@ -32,6 +32,16 @@ export const fetchCurrencyExchange = async (from: string, to: string, amount: nu
 
 // Fetch all available currencies that we can perform a conversion on
 export const fetchAvailableCurrencies = async () => {
+  const localStorageKey = "availableCurrencies";
+
+  // Check if running in a browser environment
+  if (typeof window !== "undefined") {
+    const storedCurrencies = localStorage.getItem(localStorageKey);
+    if (storedCurrencies) {
+      return JSON.parse(storedCurrencies);
+    }
+  }
+
   const options = {
     method: "GET",
     url: "/symbols"
@@ -40,6 +50,10 @@ export const fetchAvailableCurrencies = async () => {
   try {
     const response = await axiosInstance.request(options);
     if (response.data.success && response.data.symbols) {
+      // Store the fetched currencies in localStorage if in a browser environment
+      if (typeof window !== "undefined") {
+        localStorage.setItem(localStorageKey, JSON.stringify(response.data.symbols));
+      }
       return response.data.symbols;
     } else {
       throw new Error("Failed to fetch available currencies");

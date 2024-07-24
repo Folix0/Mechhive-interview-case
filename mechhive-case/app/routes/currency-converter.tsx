@@ -1,6 +1,27 @@
 import type { MetaFunction } from "@remix-run/node";
 import logo from "../assets/logo.svg";
 import CurrencySelector from "~/components/ConvertWindow";
+import { json, LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "@remix-run/react";
+import { fetchAvailableCurrencies, fetchCurrencyExchange } from "~/services/CurrencyApi";
+
+//Fetch from, to, and amount
+export const loader: LoaderFunction = async ({ request }) => {
+  const url = new URL(request.url);
+  const from = url.searchParams.get("from");
+  const to = url.searchParams.get("to");
+  const amount = url.searchParams.get("amount");
+
+  //If all are present, calculate exchange rate
+  let exchangeRate = null;
+  if (from && to && amount) {
+    const result = await fetchCurrencyExchange(from, to, parseFloat(amount));
+    exchangeRate = result.result;
+  }
+
+  const availableCurrencies = await fetchAvailableCurrencies();
+  return json({ availableCurrencies, exchangeRate });
+};
 
 export const meta: MetaFunction = () => {
   return [
@@ -13,6 +34,8 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Homepage() {
+  const { availableCurrencies, exchangeRate } = useLoaderData<typeof loader>();
+
   return (
     <div>
       <div
@@ -26,7 +49,7 @@ export default function Homepage() {
         />
         <h1 className="mt-10">Currency Converter</h1>
         <h3>Check live foreign currency exchange rates</h3>
-        <CurrencySelector />
+        <CurrencySelector availableCurrencies={availableCurrencies} initialExchangeRate={exchangeRate} />
       </div>
     </div>
   );

@@ -1,77 +1,50 @@
 import { useState, useEffect } from "react";
-import {
-  fetchAvailableCurrencies,
-  fetchCurrencyExchange,
-} from "~/services/CurrencyApi";
 import CurrencySelector from "./CurrencySelector";
 import swapArrows from "../assets/swapArrows.svg";
+import { fetchCurrencyExchange } from "~/services/CurrencyApi";
 
-const ConvertWindow: React.FC = () => {
-  const [currencies, setCurrencies] = useState<{ [key: string]: string }>({});
-  const [exchangeRate, setExchangeRate] = useState<number | null>(null);
+const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, initialExchangeRate: number | null }> = ({ availableCurrencies, initialExchangeRate }) => {
   const [fromCurrency, setFromCurrency] = useState<string>("USD");
   const [toCurrency, setToCurrency] = useState<string>("EUR");
-  const [amount, setAmount] = useState<number>(0);
+  const [amount, setAmount] = useState<number>(1);
+  const [exchangeRate, setExchangeRate] = useState<number | null>(initialExchangeRate);
+  const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
 
-  //Fetch currencies from API only if they aren't already in localStorage
   useEffect(() => {
-    const fetchCurrencies = async () => {
-      try {
-        const storedCurrencies = localStorage.getItem("currencies");
-        if (storedCurrencies) {
-          setCurrencies(JSON.parse(storedCurrencies));
-        } else {
-          const availableCurrencies = await fetchAvailableCurrencies();
-          setCurrencies(availableCurrencies);
-          localStorage.setItem(
-            "currencies",
-            JSON.stringify(availableCurrencies)
-          );
-        }
-      } catch (error) {
-        console.error("Error fetching currencies:", error);
-      }
-    };
-
-    fetchCurrencies();
-  }, []);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const amount = parseFloat(formData.get("amount") as string);
-    const from = formData.get("from") as string;
-    const to = formData.get("to") as string;
-
-    try {
-      const result = await fetchCurrencyExchange(from, to, amount);
-      setExchangeRate(result.result);
-      setAmount(amount);
-    } catch (error) {
-      console.error("Error fetching exchange rate:", error);
+    if (exchangeRate !== null) {
+      setConvertedAmount(amount * exchangeRate);
     }
-  };
+  }, [exchangeRate, amount]);
 
-  //clear any previous conversion calculations if from or to fields are changed
-  const handleFromCurrencyChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setExchangeRate(null);
+  const handleFromCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setFromCurrency(event.target.value);
-  };
-
-  const handleToCurrencyChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
     setExchangeRate(null);
-    setToCurrency(event.target.value);
   };
 
-  //swap the currencies when swapArrows are clicked
+  const handleToCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setToCurrency(event.target.value);
+    setExchangeRate(null);
+  };
+
+  const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setAmount(parseFloat(event.target.value));
+  };
+
   const handleSwapCurrencies = () => {
     setFromCurrency(toCurrency);
     setToCurrency(fromCurrency);
     setExchangeRate(null);
+  };
+
+  //Fetching the base exchange rate between the two currencies
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      const result = await fetchCurrencyExchange(fromCurrency, toCurrency, 1);
+      setExchangeRate(result.result);
+    } catch (error) {
+      console.error("Error fetching exchange rate:", error);
+    }
   };
 
   return (
@@ -79,16 +52,13 @@ const ConvertWindow: React.FC = () => {
       id="ConvertForm"
       className="mt-3 xl:mt-16 pl-2 xl:pl-4 pr-2 xl:pr-4 py-2 xl:py-4 px-8 xl:px-16 rounded-2xl xl:shadow-custom-inner-outer xl:bg-gradient-to-b from-tertiary via-tertiary via-50% to-secondary"
     >
-      <form
-        onSubmit={handleSubmit}
-        className="text-black mt-4 xl:mt-12 mr-1 xl:mr-2 ml-1 xl:ml-2 xl:mb-14"
-      >
+      <form onSubmit={handleSubmit} className="text-black mt-4 xl:mt-12 mr-1 xl:mr-2 ml-1 xl:ml-2 xl:mb-14">
         <div className="flex flex-col gap-6 xl:flex-row">
           <div className="flex flex-col order-first xl:order-1">
             <p className="text-left mb-2 text-white text-xl font-semibold">From</p>
             <CurrencySelector
               name="from"
-              currencies={currencies}
+              currencies={availableCurrencies}
               onChange={handleFromCurrencyChange}
               value={fromCurrency}
             />
@@ -105,7 +75,7 @@ const ConvertWindow: React.FC = () => {
             <p className="text-left mb-2 text-white text-xl font-semibold">To</p>
             <CurrencySelector
               name="to"
-              currencies={currencies}
+              currencies={availableCurrencies}
               onChange={handleToCurrencyChange}
               value={toCurrency}
             />
@@ -118,6 +88,8 @@ const ConvertWindow: React.FC = () => {
               name="amount"
               type="number"
               placeholder="Amount"
+              value={amount}
+              onChange={handleAmountChange}
               required
             />
           </div>
@@ -133,13 +105,12 @@ const ConvertWindow: React.FC = () => {
                         {amount.toFixed(2)} {fromCurrency} =
                       </p>
                       <p id="to" className="ml-0 xl:ml-2 font-bold ">
-                        {exchangeRate.toFixed(8)} {toCurrency}
+                        {convertedAmount?.toFixed(8)} {toCurrency}
                       </p>
                     </div>
                     <div className="flex">
                       <p className="flex text-base text-white ">
-                        1 {toCurrency} = {(amount / exchangeRate).toFixed(6)}{" "}
-                        {fromCurrency}
+                        1 {toCurrency} = {(1 / exchangeRate).toFixed(6)} {fromCurrency}
                       </p>
                     </div>
                   </>
