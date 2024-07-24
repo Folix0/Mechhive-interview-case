@@ -77,14 +77,14 @@ const ConvertWindow: React.FC = () => {
   return (
     <div
       id="ConvertForm"
-      className="mt-3 md:mt-16 pl-2 md:pl-4 pr-2 md:pr-4 py-2 md:py-4 px-8 md:px-16 rounded-2xl md:shadow-custom-inner-outer md:bg-gradient-to-b from-tertiary via-tertiary via-50% to-secondary"
+      className="mt-3 xl:mt-16 pl-2 xl:pl-4 pr-2 xl:pr-4 py-2 xl:py-4 px-8 xl:px-16 rounded-2xl xl:shadow-custom-inner-outer xl:bg-gradient-to-b from-tertiary via-tertiary via-50% to-secondary"
     >
       <form
         onSubmit={handleSubmit}
-        className="text-black mt-4 md:mt-12 mr-1 md:mr-2 ml-1 md:ml-2 md:mb-14"
+        className="text-black mt-4 xl:mt-12 mr-1 xl:mr-2 ml-1 xl:ml-2 xl:mb-14"
       >
-        <div className="flex flex-col gap-6 md:flex-row">
-          <div className="flex flex-col order-first md:order-1">
+        <div className="flex flex-col gap-6 xl:flex-row">
+          <div className="flex flex-col order-first xl:order-1">
             <p className="text-left mb-2 text-white text-xl font-semibold">From</p>
             <CurrencySelector
               name="from"
@@ -93,7 +93,7 @@ const ConvertWindow: React.FC = () => {
               value={fromCurrency}
             />
           </div>
-          <div className="flex justify-center md:items-end md:mb-1 order-1 md:order-0">
+          <div className="flex justify-center xl:items-end xl:mb-1 order-1 xl:order-0">
             <img
               src={swapArrows}
               alt="SwapArrows"
@@ -101,7 +101,7 @@ const ConvertWindow: React.FC = () => {
               onClick={handleSwapCurrencies}
             />
           </div>
-          <div className="flex flex-col order-3 md:order-last">
+          <div className="flex flex-col order-3 xl:order-last">
             <p className="text-left mb-2 text-white text-xl font-semibold">To</p>
             <CurrencySelector
               name="to"
@@ -110,7 +110,7 @@ const ConvertWindow: React.FC = () => {
               value={toCurrency}
             />
           </div>
-          <div className="flex flex-col order-3 md:order-first">
+          <div className="flex flex-col order-3 xl:order-first">
             <p className="text-left mb-2 text-white text-xl font-semibold">Amount</p>
             <input
               id="convertBox"
@@ -122,17 +122,17 @@ const ConvertWindow: React.FC = () => {
             />
           </div>
         </div>
-        <div id="ExchangeInfo" className="flex flex-col md:flex-row">
+        <div id="ExchangeInfo" className="flex flex-col xl:flex-row">
           <div className="flex flex-col mt-auto items-baseline justify-end text-white">
             <div className="text-white text-xl font-bold flex flex-row items-baseline">
               {exchangeRate !== null && (
-                <div className="ml-1 md:ml-2 text-4xl md:text-3xl mt-5 md:mt-0 flex flex-col font-normal">
+                <div className="ml-1 xl:ml-2 text-4xl xl:text-3xl mt-5 xl:mt-0 flex flex-col font-normal">
                   <>
-                    <div className="flex flex-col md:flex-row md:items-baseline">
+                    <div className="flex flex-col xl:flex-row xl:items-baseline">
                       <p id="from" className="text-xl mr-auto">
                         {amount.toFixed(2)} {fromCurrency} =
                       </p>
-                      <p id="to" className="ml-0 md:ml-2 font-bold ">
+                      <p id="to" className="ml-0 xl:ml-2 font-bold ">
                         {exchangeRate.toFixed(8)} {toCurrency}
                       </p>
                     </div>
@@ -148,7 +148,7 @@ const ConvertWindow: React.FC = () => {
             </div>
           </div>
           <button
-            className="flex flex-col md:flex-row mt-8 md:mt-12 ml-auto mr-auto md:mr-0 w-60 md:w-44 max-h-16 md:max-h-16 font-semibold items-center justify-center"
+            className="flex flex-col xl:flex-row mt-8 xl:mt-12 ml-auto mr-auto xl:mr-0 w-60 xl:w-44 max-h-16 xl:max-h-16 font-semibold items-center justify-center"
             type="submit"
           >
             Convert

@@ -22,9 +22,9 @@ export default function Homepage() {
     <div>
       <div
         id="background"
-        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 md:pb-0"
+        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 xl:pb-0"
       >
-        <img src={logo} alt="Logo" className="absolute top-1 left-1 ml-8 mt-4 w-16 h-16 md:ml-32 md:mt-8 md:w-24 md:h-24"   />
+        <img src={logo} alt="Logo" className="absolute top-1 left-1 ml-8 mt-4 w-16 h-16 xl:ml-32 xl:mt-8 xl:w-24 xl:h-24"   />
         
         <h1>
           Trusted Global Currency Converter & Money Transfer Solutions
@@ -36,7 +36,7 @@ export default function Homepage() {
           Convert
         </button> 
         {isAuthenticated && (
-          <button onClick={handleLogout} className="mt-4 md:mt-8 p-2 text-xs md:text-sm text-black absolute top-1 right-1 mr-8 md:mr-24 w-18 md:w-24 h-9 md:h-12">
+          <button onClick={handleLogout} className="mt-4 xl:mt-8 p-2 text-xs xl:text-sm text-black absolute top-1 right-1 mr-8 xl:mr-24 w-18 xl:w-24 h-9 xl:h-12">
             Sign Out
           </button>
         )}       

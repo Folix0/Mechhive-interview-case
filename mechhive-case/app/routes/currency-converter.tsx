@@ -17,12 +17,12 @@ export default function Homepage() {
     <div>
       <div
         id="background"
-        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 md:pb-0"
+        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 xl:pb-0"
       >
         <img
           src={logo}
           alt="Logo"
-          className="absolute top-1 left-1 ml-4 mt-4 w-16 h-16 md:ml-32 md:mt-8 md:w-24 md:h-24"
+          className="absolute top-1 left-1 ml-4 mt-4 w-16 h-16 xl:ml-32 xl:mt-8 xl:w-24 xl:h-24"
         />
         <h1 className="mt-10">Currency Converter</h1>
         <h3>Check live foreign currency exchange rates</h3>

@@ -28,9 +28,9 @@ export default function SignIn() {
     <div>
       <div
         id="background"
-        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 md:pb-0"
+        className="min-h-screen text-center flex flex-col items-center justify-center text-white bg-gradient-to-b from-primary to-secondary pb-12 xl:pb-0"
       >
-        <img src={logo} alt="Logo" className="absolute top-1 left-1 ml-8 mt-4 w-16 h-16 md:ml-32 md:mt-8 md:w-24 md:h-24"/>
+        <img src={logo} alt="Logo" className="absolute top-1 left-1 ml-8 mt-4 w-16 h-16 xl:ml-32 xl:mt-8 xl:w-24 xl:h-24"/>
         <form onSubmit={handleSubmit} className="flex flex-col items-center gap-2">
           <p className="mt-1 mb-1 text-white italic">Psst! Try 'admin' and 'password'</p>
           <input
@@ -47,7 +47,7 @@ export default function SignIn() {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="shadow-black/50 md:shadow-black/40"
+            className="shadow-black/50 xl:shadow-black/40"
           />
           <button type="submit" className="">
             Sign In
