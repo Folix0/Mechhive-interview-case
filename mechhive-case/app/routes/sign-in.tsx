@@ -8,6 +8,10 @@ export const meta: MetaFunction = () => {
   return [
     { title: "Sign In" },
     { name: "description", content: "Please sign in to proceed!" },
+    { name: "keywords", content: "sign in, login, authentication" },
+    { property: "og:title", content: "Sign In" },
+    { property: "og:description", content: "Please sign in to proceed!" },
+    { property: "og:type", content: "website" },
   ];
 };
 

@@ -5,6 +5,19 @@ import { json, LoaderFunction } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
 import { getApiConfig } from "~/utils/getApiConfig";
 
+export const meta: MetaFunction = () => {
+  return [
+    { title: "Exchange Converter" },
+    { name: "description", content: "A tool with which you can calculate your exchange rate!" },
+    { name: "keywords", content: "currency, exchange, converter, rates" },
+    { property: "og:title", content: "Exchange Converter" },
+    { property: "og:description", content: "Calculate your exchange rate with our tool!" },
+    { property: "og:type", content: "website" },
+  ];
+};
+
+const { API_KEY, API_HOST } = getApiConfig();
+
 //Fetch from, to, and amount
 export const loader: LoaderFunction = async ({ request }) => {
   const url = new URL(request.url);
