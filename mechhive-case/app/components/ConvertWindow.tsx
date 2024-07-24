@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
-import { fetchAvailableCurrencies, fetchCurrencyExchange } from "~/services/currencyApi";
+import {
+  fetchAvailableCurrencies,
+  fetchCurrencyExchange,
+} from "~/services/CurrencyApi";
 import CurrencySelector from "./CurrencySelector";
 import swapArrows from "../assets/swapArrows.svg";
 
@@ -74,17 +77,41 @@ const ConvertWindow: React.FC = () => {
   return (
     <div
       id="ConvertForm"
-      className="mt-16 pl-4 pr-4 py-4 px-16 rounded-2xl shadow-custom-inner-outer bg-gradient-to-b from-tertiary via-tertiary via-50% to-secondary"
+      className="mt-3 md:mt-16 pl-2 md:pl-4 pr-2 md:pr-4 py-2 md:py-4 px-8 md:px-16 rounded-2xl md:shadow-custom-inner-outer md:bg-gradient-to-b from-tertiary via-tertiary via-50% to-secondary"
     >
       <form
         onSubmit={handleSubmit}
-        className="text-black mt-12 mr-2 ml-2 mb-14"
+        className="text-black mt-4 md:mt-12 mr-1 md:mr-2 ml-1 md:ml-2 md:mb-14"
       >
-        <div className="flex flex-row gap-6">
-          <div className="flex flex-col">
-            <p className="text-left mb-2 text-white text-xl font-bold">
-              Amount
-            </p>
+        <div className="flex flex-col gap-6 md:flex-row">
+          <div className="flex flex-col order-first md:order-1">
+            <p className="text-left mb-2 text-white text-xl font-semibold">From</p>
+            <CurrencySelector
+              name="from"
+              currencies={currencies}
+              onChange={handleFromCurrencyChange}
+              value={fromCurrency}
+            />
+          </div>
+          <div className="flex justify-center md:items-end md:mb-1 order-1 md:order-0">
+            <img
+              src={swapArrows}
+              alt="SwapArrows"
+              className="max-w-14 max-h-14 cursor-pointer"
+              onClick={handleSwapCurrencies}
+            />
+          </div>
+          <div className="flex flex-col order-3 md:order-last">
+            <p className="text-left mb-2 text-white text-xl font-semibold">To</p>
+            <CurrencySelector
+              name="to"
+              currencies={currencies}
+              onChange={handleToCurrencyChange}
+              value={toCurrency}
+            />
+          </div>
+          <div className="flex flex-col order-3 md:order-first">
+            <p className="text-left mb-2 text-white text-xl font-semibold">Amount</p>
             <input
               id="convertBox"
               className="w-80"
@@ -94,44 +121,18 @@ const ConvertWindow: React.FC = () => {
               required
             />
           </div>
-          <div className="flex flex-col">
-            <p className="text-left mb-2 text-white text-xl font-bold">From</p>
-            <CurrencySelector
-              name="from"
-              currencies={currencies}
-              onChange={handleFromCurrencyChange}
-              value={fromCurrency}
-            />
-          </div>
-          <div className="flex items-end mb-1">
-            <img
-              src={swapArrows}
-              alt="SwapArrows"
-              className="max-w-14 max-h-14 cursor-pointer"
-              onClick={handleSwapCurrencies}
-            />
-          </div>
-          <div className="flex flex-col">
-            <p className="text-left mb-2 text-white text-xl font-bold">To</p>
-            <CurrencySelector
-              name="to"
-              currencies={currencies}
-              onChange={handleToCurrencyChange}
-              value={toCurrency}
-            />
-          </div>
         </div>
-        <div id="ExchangeInfo" className="flex flex-row">
+        <div id="ExchangeInfo" className="flex flex-col md:flex-row">
           <div className="flex flex-col mt-auto items-baseline justify-end text-white">
             <div className="text-white text-xl font-bold flex flex-row items-baseline">
               {exchangeRate !== null && (
-                <div className="ml-2 text-3sxl flex flex-col font-normal">
+                <div className="ml-1 md:ml-2 text-4xl md:text-3xl mt-5 md:mt-0 flex flex-col font-normal">
                   <>
-                    <div className="flex flex-row items-baseline">
-                      <p id="from" className="text-xl">
+                    <div className="flex flex-col md:flex-row md:items-baseline">
+                      <p id="from" className="text-xl mr-auto">
                         {amount.toFixed(2)} {fromCurrency} =
                       </p>
-                      <p id="to" className="ml-2 text-3xl font-bold ">
+                      <p id="to" className="ml-0 md:ml-2 font-bold ">
                         {exchangeRate.toFixed(8)} {toCurrency}
                       </p>
                     </div>
@@ -147,7 +148,7 @@ const ConvertWindow: React.FC = () => {
             </div>
           </div>
           <button
-            className="flex mt-12 ml-auto max-w-44 max-h-14 font-semibold items-center justify-center"
+            className="flex flex-col md:flex-row mt-8 md:mt-12 ml-auto mr-auto md:mr-0 w-60 md:w-44 max-h-16 md:max-h-16 font-semibold items-center justify-center"
             type="submit"
           >
             Convert

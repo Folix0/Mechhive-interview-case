@@ -22,9 +22,9 @@ export default function Homepage() {
         <img
           src={logo}
           alt="Logo"
-          className="absolute top-1 left-1 ml-8 mt-4 w-16 h-16 md:ml-32 md:mt-8 md:w-24 md:h-24"
+          className="absolute top-1 left-1 ml-4 mt-4 w-16 h-16 md:ml-32 md:mt-8 md:w-24 md:h-24"
         />
-        <h1>Currency Converter</h1>
+        <h1 className="mt-10">Currency Converter</h1>
         <h3>Check live foreign currency exchange rates</h3>
         <CurrencySelector />
       </div>
