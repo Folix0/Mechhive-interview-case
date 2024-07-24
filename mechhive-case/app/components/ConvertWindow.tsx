@@ -1,17 +1,77 @@
 import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import CurrencySelector from "./CurrencySelector";
 import swapArrows from "../assets/swapArrows.svg";
 import { getApiConfig } from "~/utils/getApiConfig";
 
 const { API_KEY, API_HOST } = getApiConfig();
 
-const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, initialExchangeRate: number | null }> = ({ availableCurrencies, initialExchangeRate }) => {
-  const [fromCurrency, setFromCurrency] = useState<string>("USD");
-  const [toCurrency, setToCurrency] = useState<string>("EUR");
-  const [amount, setAmount] = useState<number>(1);
-  const [exchangeRate, setExchangeRate] = useState<number | null>(initialExchangeRate);
+const ConvertWindow: React.FC<{
+  availableCurrencies: { [key: string]: string };
+  initialExchangeRate: number | null;
+}> = ({ availableCurrencies, initialExchangeRate }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  //Parse the URL parameters if the user redirected with a specific link. If not, use default values
+  const params = new URLSearchParams(location.search);
+  const initialFromCurrency = params.get("from") || "USD";
+  const initialToCurrency = params.get("to") || "EUR";
+  const initialAmount = parseFloat(params.get("amount") || "1");
+
+  const [fromCurrency, setFromCurrency] = useState<string>(initialFromCurrency);
+  const [toCurrency, setToCurrency] = useState<string>(initialToCurrency);
+  const [amount, setAmount] = useState<number>(initialAmount);
+  const [exchangeRate, setExchangeRate] = useState<number | null>(
+    initialExchangeRate
+  );
   const [convertedAmount, setConvertedAmount] = useState<number | null>(null);
 
+  //Whenever from, to, or amount changes, we update the URL with the current state values
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    params.set("from", fromCurrency);
+    params.set("to", toCurrency);
+    params.set("amount", amount.toString());
+    navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+  }, [
+    fromCurrency,
+    toCurrency,
+    amount,
+    navigate,
+    location.pathname,
+    location.search,
+  ]);
+
+  //Whenever from or to changes, fetch the exchange rate
+  useEffect(() => {
+    const fetchExchangeRate = async () => {
+      try {
+        const response = await fetch(
+          `https://${API_HOST}/convert?from=${fromCurrency}&to=${toCurrency}&amount=1`,
+          {
+            headers: {
+              "x-rapidapi-key": API_KEY,
+              "x-rapidapi-host": API_HOST,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch currency exchange");
+        }
+
+        const result = await response.json();
+        setExchangeRate(result.result);
+      } catch (error) {
+        console.error("Error fetching exchange rate:", error);
+      }
+    };
+
+    fetchExchangeRate();
+  }, [fromCurrency, toCurrency]);
+
+  //Whenever exchangeRate or amount changes, calculate the exchange rate
   useEffect(() => {
     if (amount === 0 || amount === undefined) {
       setExchangeRate(null);
@@ -20,20 +80,24 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
     }
   }, [exchangeRate, amount]);
 
-  const handleFromCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleFromCurrencyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setFromCurrency(event.target.value);
     setExchangeRate(null);
   };
 
-  const handleToCurrencyChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  const handleToCurrencyChange = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
     setToCurrency(event.target.value);
     setExchangeRate(null);
   };
 
   const handleAmountChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  const value = event.target.value;
-  setAmount(value === "" ? 0 : parseFloat(value));
-};
+    const value = event.target.value;
+    setAmount(value === "" ? 0 : parseFloat(value));
+  };
 
   const handleSwapCurrencies = () => {
     setFromCurrency(toCurrency);
@@ -45,12 +109,15 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     try {
-      const response = await fetch(`https://${API_HOST}/convert?from=${fromCurrency}&to=${toCurrency}&amount=1`, {
-        headers: {
-          'x-rapidapi-key': API_KEY,
-          'x-rapidapi-host': API_HOST
+      const response = await fetch(
+        `https://${API_HOST}/convert?from=${fromCurrency}&to=${toCurrency}&amount=1`,
+        {
+          headers: {
+            "x-rapidapi-key": API_KEY,
+            "x-rapidapi-host": API_HOST,
+          },
         }
-      });
+      );
 
       if (!response.ok) {
         throw new Error("Failed to fetch currency exchange");
@@ -68,10 +135,15 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
       id="ConvertForm"
       className="mt-3 xl:mt-16 pl-2 xl:pl-4 pr-2 xl:pr-4 py-2 xl:py-4 px-8 xl:px-16 rounded-2xl xl:shadow-custom-inner-outer xl:bg-gradient-to-b from-tertiary via-tertiary via-50% to-secondary"
     >
-      <form onSubmit={handleSubmit} className="text-black mt-4 xl:mt-12 mr-1 xl:mr-2 ml-1 xl:ml-2 xl:mb-14">
+      <form
+        onSubmit={handleSubmit}
+        className="text-black mt-4 xl:mt-12 mr-1 xl:mr-2 ml-1 xl:ml-2 xl:mb-14"
+      >
         <div className="flex flex-col gap-6 xl:flex-row">
           <div className="flex flex-col order-first xl:order-1">
-            <p className="text-left mb-2 text-white text-xl font-semibold">From</p>
+            <p className="text-left mb-2 text-white text-xl font-semibold">
+              From
+            </p>
             <CurrencySelector
               name="from"
               currencies={availableCurrencies}
@@ -88,7 +160,9 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
             />
           </div>
           <div className="flex flex-col order-3 xl:order-last">
-            <p className="text-left mb-2 text-white text-xl font-semibold">To</p>
+            <p className="text-left mb-2 text-white text-xl font-semibold">
+              To
+            </p>
             <CurrencySelector
               name="to"
               currencies={availableCurrencies}
@@ -97,7 +171,9 @@ const ConvertWindow: React.FC<{ availableCurrencies: { [key: string]: string }, 
             />
           </div>
           <div className="flex flex-col order-3 xl:order-first">
-            <p className="text-left mb-2 text-white text-xl font-semibold">Amount</p>
+            <p className="text-left mb-2 text-white text-xl font-semibold">
+              Amount
+            </p>
             <input
               id="convertBox"
               className="w-80"
